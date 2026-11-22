@@ -32,7 +32,7 @@ select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px sol
 </head>
 <body>
 <main>
- <div class="top"><div class="brand">ONE <span>BLACKJACK</span> ASİSTANI</div><div class="tag">iPhone · Chrome · v5.1</div></div>
+ <div class="top"><div class="brand">ONE <span>BLACKJACK</span> ASİSTANI</div><div class="tag">iPhone · Chrome · v5.2</div></div>
  <h1>Kararını hesapla.</h1>
  <p class="sub">Kartlarını gir, temel strateji önerisini gör ve oynanan kartları deste takibine ekle.</p>
  <div class="tabs"><button id="tabPlay" class="active">Karar asistanı</button><button id="tabShoe">Deste takibi</button></div>
@@ -109,7 +109,7 @@ select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px sol
   </section>
   <p class="note">Hi-Lo sayımı: 2–6 = +1, 7–9 = 0, 10 ve As = −1. Gerçek sayım, kalan deste miktarına bölünerek yaklaşık hesaplanır. Kart sayımı tek başına kazanma garantisi değildir; bu uygulama masa kurallarını veya casino ayakkabısını otomatik okuyamaz.</p>
  </div>
- <p class="note">v5.1: Soft el tespiti düzeltildi; As 11 değerinde kaldığında el soft olarak değerlendirilir. Çift eşleştirmesi ve diğer strateji geliştirmeleri korunmuştur. Önemli: Deste takibi yalnızca senin girdiğin kartları sayar. Bir eli oynadıktan sonra “Kartları desteye ekle” düğmesine bas; böylece elindeki kartlar ve krupiyenin açık kartı sayaca eklenir. Aynı kartları ayrıca “Görülen kartları kaydet” bölümünden tekrar girme.</p>
+ <p class="note">v5.2: Çift ellerde Hi-Lo sapması engellendi; soft ellerde batma riski As değerini yeniden hesaplayarak bulunur. v5.1 soft el tespiti ve mevcut temel strateji korunmuştur. Önemli: Deste takibi yalnızca senin girdiğin kartları sayar. Bir eli oynadıktan sonra “Kartları desteye ekle” düğmesine bas; böylece elindeki kartlar ve krupiyenin açık kartı sayaca eklenir. Aynı kartları ayrıca “Görülen kartları kaydet” bölümünden tekrar girme.</p>
 </main>
 <script>
 const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
@@ -195,7 +195,10 @@ function liveCountInfo(){
 function countDeviation(){
  if(hand.length<2||!$('dealer').value)return null;
  const s=score(hand),d=dealerVal($('dealer').value),tc=liveCountInfo().tc;
- if(s.soft||hand.length!==2)return null;
+ // Çift ellerde toplamı hard el gibi yorumlayıp Hi-Lo sapması uygulama.
+ // Özellikle 8-8, hard 16 vs 10 değildir; temel stratejinin BÖL kararı korunur.
+ const isPair=hand.length===2&&hand[0]===hand[1];
+ if(isPair||s.soft||hand.length!==2)return null;
  // Çok desteli oyunlar için yaygın Hi-Lo indeks sapmalarından sınırlı bir grup.
  const rules=[
   [16,10,0,'16’ya karşı 10','Gerçek sayım 0 veya üzerindeyse 16’ya karşı 10’da bekle.'],
@@ -225,7 +228,8 @@ function updateCountAwareness(){
   $('countAdvice').textContent='Elini ve krupiyenin açık kartını gir; geçmişte kaydettiğin kartlar da hesaba katılır.';
   updateCountAwareDecision();return;
  }
- let bust=0;ranks.forEach(r=>{if(counts[r]>0&&s.total+val(r)>21)bust+=counts[r]});
+ // As gerektiğinde 11'den 1'e düşer; her olası çekişte eli yeniden puanla.
+ let bust=0;ranks.forEach(r=>{if(counts[r]>0&&score([...hand,r]).total>21)bust+=counts[r]});
  const tens=['10','J','Q','K'].reduce((n,r)=>n+counts[r],0);
  $('bustRisk').textContent=(100*bust/remaining).toFixed(1)+'%';
  $('tenShare').textContent=(100*tens/remaining).toFixed(1)+'%';
@@ -265,5 +269,5 @@ $('tabPlay').onclick=()=>{$('playPanel').classList.remove('hidden');$('shoePanel
 $('tabShoe').onclick=()=>{$('playPanel').classList.add('hidden');$('shoePanel').classList.remove('hidden');$('tabShoe').classList.add('active');$('tabPlay').classList.remove('active');renderShoe()};
 loadShoe();$('deckCount').value=String(decks);renderHand();renderShoe();calculate();
 </script>
-<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=5.1").catch(()=>{}));}</script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=5.2").catch(()=>{}));}</script>
 </body></html>
