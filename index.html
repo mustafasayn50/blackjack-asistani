@@ -32,7 +32,7 @@ select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px sol
 </head>
 <body>
 <main>
- <div class="top"><div class="brand">ONE <span>BLACKJACK</span> ASİSTANI</div><div class="tag">iPhone · Chrome</div></div>
+ <div class="top"><div class="brand">ONE <span>BLACKJACK</span> ASİSTANI</div><div class="tag">iPhone · Chrome · v5</div></div>
  <h1>Kararını hesapla.</h1>
  <p class="sub">Kartlarını gir, temel strateji önerisini gör ve oynanan kartları deste takibine ekle.</p>
  <div class="tabs"><button id="tabPlay" class="active">Karar asistanı</button><button id="tabShoe">Deste takibi</button></div>
@@ -109,7 +109,7 @@ select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px sol
   </section>
   <p class="note">Hi-Lo sayımı: 2–6 = +1, 7–9 = 0, 10 ve As = −1. Gerçek sayım, kalan deste miktarına bölünerek yaklaşık hesaplanır. Kart sayımı tek başına kazanma garantisi değildir; bu uygulama masa kurallarını veya casino ayakkabısını otomatik okuyamaz.</p>
  </div>
- <p class="note">Önemli: Deste takibi yalnızca senin girdiğin kartları sayar. Bir eli oynadıktan sonra “Kartları desteye ekle” düğmesine bas; böylece elindeki kartlar ve krupiyenin açık kartı sayaca eklenir. Aynı kartları ayrıca “Görülen kartları kaydet” bölümünden tekrar girme.</p>
+ <p class="note">v5: Soft el kararları ve çift eşleştirmesi iyileştirildi. Önemli: Deste takibi yalnızca senin girdiğin kartları sayar. Bir eli oynadıktan sonra “Kartları desteye ekle” düğmesine bas; böylece elindeki kartlar ve krupiyenin açık kartı sayaca eklenir. Aynı kartları ayrıca “Görülen kartları kaydet” bölümünden tekrar girme.</p>
 </main>
 <script>
 const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
@@ -130,7 +130,7 @@ function renderHand(){
 function setResult(a,why){$('result').querySelector('strong').textContent=a;$('result').querySelector('small').textContent=hand.length?'Temel strateji önerisi':'Kart bekleniyor';$('reason').textContent=why}
 function decide(){
  if(hand.length<2||!$('dealer').value)return {a:'KARTLARI TAMAMLA',why:'En az iki el kartı ve krupiyenin açık kartını seç.'};
- const s=score(hand),d=dealerVal($('dealer').value),two=hand.length===2,pair=two&&val(hand[0])===val(hand[1]),das=$('das').value==='yes',h17=$('soft17').value==='hit';
+ const s=score(hand),d=dealerVal($('dealer').value),two=hand.length===2,pair=two&&hand[0]===hand[1],das=$('das').value==='yes',h17=$('soft17').value==='hit';
  if(s.total>21)return {a:'BUST',why:'El 21’i geçti. Bu el kaybedilmiş durumda.'};
  if(s.total===21)return {a:'BEKLE',why:'21 toplamın var; kart çekme.'};
  if(pair){
@@ -145,20 +145,22 @@ function decide(){
  }
  if(s.soft){
   const other=hand.filter(r=>r!=='A').reduce((n,r)=>n+val(r),0);
+  // Soft toplamlar: 6–8 deste temel strateji yaklaşımı; H17/S17 ve double uygunluğu dikkate alınır.
   if(two){
    let dbl=false;
-   if(other===2||other===3)dbl=h17?d>=4&&d<=6:d>=5&&d<=6;
-   else if(other===4||other===5)dbl=h17?d>=3&&d<=6:d>=4&&d<=6;
-   else if(other===6)dbl=h17?d>=2&&d<=6:d>=3&&d<=6;
-   else if(other===7)dbl=h17?d>=2&&d<=6:d>=3&&d<=6;
-   if(dbl)return {a:'ÇİFTLE',why:'Soft el ve krupiyenin açık kartı için double temel stratejiye uygundur.'};
+   if(other===2||other===3)dbl=h17?(d>=4&&d<=6):(d>=5&&d<=6);
+   else if(other===4||other===5)dbl=h17?(d>=3&&d<=6):(d>=4&&d<=6);
+   else if(other===6)dbl=h17?(d>=2&&d<=6):(d>=3&&d<=6);
+   else if(other===7)dbl=h17?(d>=2&&d<=6):(d>=3&&d<=6);
+   else if(other===8)dbl=h17&&d===6;
+   if(dbl)return {a:'ÇİFTLE',why:'Soft '+s.total+': bu krupiye kartına karşı double temel stratejiye uygundur.'};
   }
   if(s.total>=19)return {a:'BEKLE',why:'Soft 19 veya üzeri: bekle.'};
   if(s.total===18){
-   if(d>=3&&d<=6)return {a:'BEKLE',why:'Soft 18: bu açık karta karşı beklemek uygundur (double seçeneği yoksa).'};
    if(d===2||d===7||d===8)return {a:'BEKLE',why:'Soft 18: krupiyenin 2, 7 veya 8 kartına karşı bekle.'};
+   if(d>=3&&d<=6)return {a:'BEKLE',why:'Soft 18: double mümkün değilse bu açık karta karşı bekle.'};
   }
-  return {a:'KART ÇEK',why:'Bu soft elde temel strateji kart çekmeyi önerir.'};
+  return {a:'KART ÇEK',why:'Bu soft elde double veya bekleme koşulu oluşmadı; kart çek.'};
  }
  const t=s.total;
  if(two&&t===9&&d>=3&&d<=6)return {a:'ÇİFTLE',why:'9 toplam: krupiyenin 3–6 kartına karşı double.'};
@@ -263,5 +265,5 @@ $('tabPlay').onclick=()=>{$('playPanel').classList.remove('hidden');$('shoePanel
 $('tabShoe').onclick=()=>{$('playPanel').classList.add('hidden');$('shoePanel').classList.remove('hidden');$('tabShoe').classList.add('active');$('tabPlay').classList.remove('active');renderShoe()};
 loadShoe();$('deckCount').value=String(decks);renderHand();renderShoe();calculate();
 </script>
-<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=4").catch(()=>{}));}</script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=5").catch(()=>{}));}</script>
 </body></html>
