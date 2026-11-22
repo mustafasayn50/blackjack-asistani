@@ -32,7 +32,7 @@ select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px sol
 </head>
 <body>
 <main>
- <div class="top"><div class="brand">ONE <span>BLACKJACK</span> ASİSTANI</div><div class="tag">iPhone · Chrome · v5</div></div>
+ <div class="top"><div class="brand">ONE <span>BLACKJACK</span> ASİSTANI</div><div class="tag">iPhone · Chrome · v5.1</div></div>
  <h1>Kararını hesapla.</h1>
  <p class="sub">Kartlarını gir, temel strateji önerisini gör ve oynanan kartları deste takibine ekle.</p>
  <div class="tabs"><button id="tabPlay" class="active">Karar asistanı</button><button id="tabShoe">Deste takibi</button></div>
@@ -109,7 +109,7 @@ select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px sol
   </section>
   <p class="note">Hi-Lo sayımı: 2–6 = +1, 7–9 = 0, 10 ve As = −1. Gerçek sayım, kalan deste miktarına bölünerek yaklaşık hesaplanır. Kart sayımı tek başına kazanma garantisi değildir; bu uygulama masa kurallarını veya casino ayakkabısını otomatik okuyamaz.</p>
  </div>
- <p class="note">v5: Soft el kararları ve çift eşleştirmesi iyileştirildi. Önemli: Deste takibi yalnızca senin girdiğin kartları sayar. Bir eli oynadıktan sonra “Kartları desteye ekle” düğmesine bas; böylece elindeki kartlar ve krupiyenin açık kartı sayaca eklenir. Aynı kartları ayrıca “Görülen kartları kaydet” bölümünden tekrar girme.</p>
+ <p class="note">v5.1: Soft el tespiti düzeltildi; As 11 değerinde kaldığında el soft olarak değerlendirilir. Çift eşleştirmesi ve diğer strateji geliştirmeleri korunmuştur. Önemli: Deste takibi yalnızca senin girdiğin kartları sayar. Bir eli oynadıktan sonra “Kartları desteye ekle” düğmesine bas; böylece elindeki kartlar ve krupiyenin açık kartı sayaca eklenir. Aynı kartları ayrıca “Görülen kartları kaydet” bölümünden tekrar girme.</p>
 </main>
 <script>
 const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
@@ -117,7 +117,7 @@ let hand=[]; let shoeSeen=[]; let decks=6;
 const $=id=>document.getElementById(id);
 function val(r){return r==='A'?11:['K','Q','J'].includes(r)?10:Number(r)}
 function dealerVal(r){return r==='A'?11:['10','J','Q','K'].includes(r)?10:Number(r)}
-function score(cards){let raw=cards.reduce((s,r)=>s+val(r),0), aces=cards.filter(r=>r==='A').length,total=raw;while(total>21&&aces){total-=10;aces--}return {total,soft:cards.includes('A')&&total!==raw,raw}}
+function score(cards){let raw=cards.reduce((s,r)=>s+val(r),0), aces=cards.filter(r=>r==='A').length,total=raw;while(total>21&&aces){total-=10;aces--}return {total,soft:aces>0,raw}}
 function makeButtons(target,fn){ranks.forEach(r=>{let b=document.createElement('button');b.className='rank';b.textContent=r;b.onclick=()=>fn(r);target.appendChild(b)})}
 makeButtons($('handButtons'),r=>{hand.push(r);renderHand();calculate()});
 makeButtons($('seenButtons'),r=>{shoeSeen.push(r);saveShoe();renderShoe();calculate()});
@@ -265,5 +265,5 @@ $('tabPlay').onclick=()=>{$('playPanel').classList.remove('hidden');$('shoePanel
 $('tabShoe').onclick=()=>{$('playPanel').classList.add('hidden');$('shoePanel').classList.remove('hidden');$('tabShoe').classList.add('active');$('tabPlay').classList.remove('active');renderShoe()};
 loadShoe();$('deckCount').value=String(decks);renderHand();renderShoe();calculate();
 </script>
-<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=5").catch(()=>{}));}</script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=5.1").catch(()=>{}));}</script>
 </body></html>
