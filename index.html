@@ -3,125 +3,151 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#101827">
+<meta name="theme-color" content="#0b1220">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>ONE Blackjack Asistanı</title>
 <style>
 :root{--bg:#0b1220;--panel:#141f30;--panel2:#1b2940;--line:#2b3b54;--txt:#f4f7fb;--muted:#a9b7ca;--gold:#f5c451;--green:#31c48d;--red:#f87171;--blue:#73b7ff}
 *{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0b1220,#111d30 65%,#0b1220);color:var(--txt);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
-main{max-width:620px;margin:auto;padding:18px 0 34px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.brand{font-weight:800;letter-spacing:.5px;font-size:20px}.brand span{color:var(--gold)}.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:6px 9px;border-radius:20px}
-h1{font-size:25px;margin:12px 0 5px} .sub{color:var(--muted);font-size:13px;line-height:1.45;margin:0 0 18px}
+main{max-width:650px;margin:auto;padding:18px 0 36px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.brand{font-weight:850;letter-spacing:.4px;font-size:20px}.brand span{color:var(--gold)}.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:6px 9px;border-radius:20px}
+h1{font-size:25px;margin:12px 0 5px}.sub{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 14px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}.tabs button{padding:12px}.tabs button.active{background:var(--gold);color:#172033;border-color:var(--gold)}
 .card{background:rgba(20,31,48,.96);border:1px solid var(--line);border-radius:17px;padding:16px;margin:12px 0;box-shadow:0 10px 30px #0002}
-.section-title{font-size:15px;font-weight:750;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-.small{font-size:12px;color:var(--muted);font-weight:500}
+.section-title{font-size:15px;font-weight:750;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}.small{font-size:12px;color:var(--muted);font-weight:500}
 .cards{display:flex;gap:8px;flex-wrap:wrap;min-height:42px;margin:8px 0 12px}
-.playing{background:#f7f7f2;color:#172033;border-radius:8px;width:39px;height:54px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;box-shadow:0 2px 4px #0005;position:relative}
-.playing.red{color:#d33}.playing:after{content:"";position:absolute;bottom:3px;right:5px;font-size:9px}
+.playing{background:#f7f7f2;color:#172033;border-radius:8px;width:39px;height:54px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;box-shadow:0 2px 4px #0005}
 .controls{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
-button,select{font:inherit}button{border:1px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:10px;padding:11px 4px;font-weight:700;cursor:pointer;touch-action:manipulation}
-button:active{transform:scale(.97)}button.rank{font-size:17px;min-height:47px}button.redtxt{color:#ff8a8a}
-select{width:100%;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:12px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.action{display:flex;align-items:center;justify-content:center;min-height:78px;border-radius:14px;background:#1d3a35;border:1px solid #28644f;margin:12px 0 8px;text-align:center}
+button,select,input{font:inherit}button{border:1px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:10px;padding:11px 4px;font-weight:700;cursor:pointer;touch-action:manipulation}
+button:active{transform:scale(.98)}button.rank{font-size:17px;min-height:47px}
+select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:12px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.action{display:flex;align-items:center;justify-content:center;min-height:78px;border-radius:14px;background:#1d3a35;border:1px solid #28644f;margin:12px 0 8px;text-align:center}
 .action strong{display:block;color:#70e2b4;font-size:25px;letter-spacing:.3px}.action small{display:block;color:#c1d8d0;margin-top:4px}
-.reason{font-size:13px;color:var(--muted);line-height:1.5}
-.btnrow{display:flex;gap:8px;margin-top:10px}.btnrow button{flex:1}
-.primary{background:var(--gold);color:#172033;border-color:var(--gold)}
-.danger{background:#3a2028;border-color:#67313b;color:#ffb3b3}
-.note{font-size:11px;color:#91a1b7;line-height:1.5;margin:14px 3px}
-.hidden{display:none!important}
-@media(min-width:540px){.controls{grid-template-columns:repeat(5,1fr)}}
+.reason{font-size:13px;color:var(--muted);line-height:1.5}.btnrow{display:flex;gap:8px;margin-top:10px}.btnrow button{flex:1}.primary{background:var(--gold);color:#172033;border-color:var(--gold)}.danger{background:#3a2028;border-color:#67313b;color:#ffb3b3}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{display:block;font-size:21px;color:var(--gold);margin-top:3px}
+.bar{height:9px;background:#26354b;border-radius:9px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--green);width:0}
+.note{font-size:11px;color:#91a1b7;line-height:1.55;margin:14px 3px}.hidden{display:none!important}
+@media(min-width:540px){.controls{grid-template-columns:repeat(7,1fr)}}
 </style>
 </head>
 <body>
 <main>
  <div class="top"><div class="brand">ONE <span>BLACKJACK</span> ASİSTANI</div><div class="tag">iPhone · Chrome</div></div>
  <h1>Kararını hesapla.</h1>
- <p class="sub">Elindeki kartları ve krupiyenin açık kartını seç. Asistan temel stratejiye göre önerisini anında gösterecek.</p>
+ <p class="sub">Kartlarını gir, temel strateji önerisini gör ve oynanan kartları deste takibine ekle.</p>
+ <div class="tabs"><button id="tabPlay" class="active">Karar asistanı</button><button id="tabShoe">Deste takibi</button></div>
 
- <section class="card">
-  <div class="section-title">Senin elin <span class="small" id="handTotal">Toplam: —</span></div>
-  <div class="cards" id="handCards"><span class="small">Henüz kart eklenmedi</span></div>
-  <div class="controls" id="handButtons"></div>
-  <div class="btnrow"><button class="danger" id="undo">Son kartı sil</button><button id="clear">Eli sıfırla</button></div>
- </section>
+ <div id="playPanel">
+  <section class="card">
+   <div class="section-title">Senin elin <span class="small" id="handTotal">Toplam: —</span></div>
+   <div class="cards" id="handCards"><span class="small">Henüz kart eklenmedi</span></div>
+   <div class="controls" id="handButtons"></div>
+   <div class="btnrow"><button class="danger" id="undo">Son kartı sil</button><button id="clear">Eli sıfırla</button></div>
+  </section>
+  <section class="card">
+   <div class="section-title">Krupiyenin açık kartı</div>
+   <div class="row"><select id="dealer"><option value="">Kart seç</option></select><div class="action" style="margin:0;min-height:48px"><div><strong id="dealerLabel" style="font-size:17px">—</strong><small>Açık kart</small></div></div></div>
+  </section>
+  <section class="card">
+   <div class="section-title">Masa kuralları <span class="small">Ayarlanabilir</span></div>
+   <div class="row">
+    <label class="small">Krupiye soft 17'de<select id="soft17"><option value="stand">Bekler (S17)</option><option value="hit">Kart çeker (H17)</option></select></label>
+    <label class="small">Split sonrası double<select id="das"><option value="yes">Serbest (DAS)</option><option value="no">Yasak</option></select></label>
+   </div>
+   <p class="small" style="margin-bottom:0">Bu sürümde surrender (pes etme) seçeneği hesaba katılmaz.</p>
+  </section>
+  <section class="card">
+   <div class="section-title">Önerilen hamle</div>
+   <div class="action" id="result"><div><strong>BAŞLAMAK İÇİN</strong><small>El ve krupiye kartını seç</small></div></div>
+   <div class="reason" id="reason">Çok desteli oyunlar için temel strateji yaklaşımı kullanılır.</div>
+   <div class="btnrow"><button class="primary" id="calculate">Kararı hesapla</button><button id="countRound">Kartları desteye ekle</button></div>
+   <p class="small" id="roundMsg" style="margin-bottom:0"></p>
+  </section>
+ </div>
 
- <section class="card">
-  <div class="section-title">Krupiyenin açık kartı</div>
-  <div class="row">
-   <select id="dealer"><option value="">Kart seç</option></select>
-   <div class="action" style="margin:0;min-height:48px"><div><strong id="dealerLabel" style="font-size:17px">—</strong><small>Açık kart</small></div></div>
-  </div>
- </section>
-
- <section class="card">
-  <div class="section-title">Masa kuralları <span class="small">Ayarlanabilir</span></div>
-  <div class="row">
-   <label class="small">Krupiye soft 17'de
-    <select id="soft17"><option value="stand">Bekler (S17)</option><option value="hit">Kart çeker (H17)</option></select>
-   </label>
-   <label class="small">Split sonrası double
-    <select id="das"><option value="yes">Serbest (DAS)</option><option value="no">Yasak</option></select>
-   </label>
-  </div>
- </section>
-
- <section class="card">
-  <div class="section-title">Önerilen hamle</div>
-  <div class="action" id="result"><div><strong>BAŞLAMAK İÇİN</strong><small>El ve krupiye kartını seç</small></div></div>
-  <div class="reason" id="reason">Karar, 4–8 deste için standart temel strateji yaklaşımıyla hesaplanır. Bu bir kazanma garantisi değildir.</div>
-  <div class="btnrow"><button class="primary" id="calculate">Kararı hesapla</button></div>
- </section>
- <p class="note">Bilgi: Bu sürümde kartları elle seçiyorsun; iPhone Chrome, başka bir sekmedeki canlı casino görüntüsünü sürekli okuyamaz. Otomatik görüntü tanıma ayrıca test edilmelidir. 6 kart Charlie, sigorta ve yan bahisler bu temel strateji kararına dahil değildir. Oyun kurallarında deste sayısı ve diğer özel şartlar kesin doğrulanana kadar varsayımsal kabul edilmiştir.</p>
+ <div id="shoePanel" class="hidden">
+  <section class="card">
+   <div class="section-title">Deste ayarları <span class="small">Yeni ayakkabı aç</span></div>
+   <div class="row">
+    <label class="small">Başlangıç deste sayısı<select id="deckCount"><option>1</option><option>2</option><option>4</option><option selected>6</option><option>8</option></select></label>
+    <div><div class="small">Kalan kart</div><div style="font-size:22px;font-weight:800;margin-top:8px" id="remainingCards">312</div></div>
+   </div>
+   <div class="btnrow"><button class="danger" id="newShoe">Deste takibini sıfırla</button></div>
+  </section>
+  <section class="card">
+   <div class="section-title">Görülen kartları kaydet <span class="small">Tek dokunuş</span></div>
+   <p class="small">Masada açığa çıkan kartları buradan da ekleyebilirsin. Aynı kartı birden fazla kez eklemek normaldir.</p>
+   <div class="controls" id="seenButtons"></div>
+   <div class="btnrow"><button class="danger" id="undoSeen">Son görülen kartı geri al</button></div>
+  </section>
+  <section class="card">
+   <div class="section-title">Deste durumu</div>
+   <div class="stats">
+    <div class="stat"><span class="small">Kalan deste</span><b id="decksLeft">6.00</b></div>
+    <div class="stat"><span class="small">Hi-Lo sayımı</span><b id="runningCount">0</b></div>
+    <div class="stat"><span class="small">Gerçek sayım</span><b id="trueCount">0.0</b></div>
+    <div class="stat"><span class="small">Görülen kart</span><b id="seenTotal">0</b></div>
+   </div>
+   <div style="margin-top:16px;font-weight:700;font-size:13px">Görülen kart dağılımı</div>
+   <div id="distribution" style="margin-top:10px"></div>
+  </section>
+  <p class="note">Hi-Lo sayımı: 2–6 = +1, 7–9 = 0, 10 ve As = −1. Gerçek sayım, kalan deste miktarına bölünerek yaklaşık hesaplanır. Kart sayımı tek başına kazanma garantisi değildir; bu uygulama masa kurallarını veya casino ayakkabısını otomatik okuyamaz.</p>
+ </div>
+ <p class="note">Önemli: Deste takibi yalnızca senin girdiğin kartları sayar. Bir eli oynadıktan sonra “Kartları desteye ekle” düğmesine bas; böylece elindeki kartlar ve krupiyenin açık kartı sayaca eklenir. Aynı kartları ayrıca “Görülen kartları kaydet” bölümünden tekrar girme.</p>
 </main>
 <script>
 const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-const suits=[['♠','black'],['♥','red'],['♦','red'],['♣','black']];
-let hand=[];
-const handButtons=document.getElementById('handButtons');
-ranks.forEach(r=>{let b=document.createElement('button');b.className='rank '+(['♥','♦'].includes(r)?'redtxt':'');b.textContent=r;b.onclick=()=>{hand.push(r);render()};handButtons.appendChild(b)});
-const dealer=document.getElementById('dealer');
-ranks.forEach(r=>{let o=document.createElement('option');o.value=r;o.textContent=r;dealer.appendChild(o)});
-function value(r){return r==='A'?11:['K','Q','J'].includes(r)?10:Number(r)}
-function score(cards){let total=cards.reduce((s,r)=>s+value(r),0),aces=cards.filter(r=>r==='A').length;while(total>21&&aces){total-=10;aces--}return {total,soft:cards.includes('A')&&total<=cards.reduce((s,r)=>s+value(r),0)}}
-function render(){
- const el=document.getElementById('handCards');el.innerHTML='';
- if(!hand.length)el.innerHTML='<span class="small">Henüz kart eklenmedi</span>';
- hand.forEach((r,i)=>{let d=document.createElement('div');d.className='playing';d.textContent=r;el.appendChild(d)});
- const s=score(hand);document.getElementById('handTotal').textContent=hand.length?'Toplam: '+s.total+(s.soft?' (soft)':''):'Toplam: —';
+let hand=[]; let shoeSeen=[]; let decks=6;
+const $=id=>document.getElementById(id);
+function val(r){return r==='A'?11:['K','Q','J'].includes(r)?10:Number(r)}
+function dealerVal(r){return r==='A'?11:['10','J','Q','K'].includes(r)?10:Number(r)}
+function score(cards){let raw=cards.reduce((s,r)=>s+val(r),0), aces=cards.filter(r=>r==='A').length,total=raw;while(total>21&&aces){total-=10;aces--}return {total,soft:cards.includes('A')&&total!==raw,raw}}
+function makeButtons(target,fn){ranks.forEach(r=>{let b=document.createElement('button');b.className='rank';b.textContent=r;b.onclick=()=>fn(r);target.appendChild(b)})}
+makeButtons($('handButtons'),r=>{hand.push(r);renderHand();calculate()});
+makeButtons($('seenButtons'),r=>{shoeSeen.push(r);saveShoe();renderShoe()});
+ranks.forEach(r=>{let o=document.createElement('option');o.value=r;o.textContent=r;$('dealer').appendChild(o)});
+function renderHand(){
+ $('handCards').innerHTML=''; if(!hand.length)$('handCards').innerHTML='<span class="small">Henüz kart eklenmedi</span>';
+ hand.forEach(r=>{let d=document.createElement('div');d.className='playing';d.textContent=r;$('handCards').appendChild(d)});
+ const s=score(hand);$('handTotal').textContent=hand.length?'Toplam: '+s.total+(s.soft?' (soft)':''):'Toplam: —';
 }
-function dealerNum(r){return r==='A'?11:['10','J','Q','K'].includes(r)?10:Number(r)}
+function setResult(a,why){$('result').querySelector('strong').textContent=a;$('result').querySelector('small').textContent=hand.length?'Temel strateji önerisi':'Kart bekleniyor';$('reason').textContent=why}
 function decide(){
- if(hand.length<2||!dealer.value)return {a:'KARTLARI TAMAMLA',why:'En az iki el kartı ve krupiyenin açık kartını seç.'};
- const s=score(hand),d=dealerNum(dealer.value),two=hand.length===2, pair=two&&value(hand[0])===value(hand[1]),sameA=pair&&hand[0]==='A',same8=pair&&value(hand[0])===8;
+ if(hand.length<2||!$('dealer').value)return {a:'KARTLARI TAMAMLA',why:'En az iki el kartı ve krupiyenin açık kartını seç.'};
+ const s=score(hand),d=dealerVal($('dealer').value),two=hand.length===2,pair=two&&val(hand[0])===val(hand[1]),das=$('das').value==='yes',h17=$('soft17').value==='hit';
  if(s.total>21)return {a:'BUST',why:'El 21’i geçti. Bu el kaybedilmiş durumda.'};
  if(s.total===21)return {a:'BEKLE',why:'21 toplamın var; kart çekme.'};
  if(pair){
-  let p=value(hand[0]),split=false;
+  const p=val(hand[0]);let split=false;
   if(p===11||p===8)split=true;
   else if(p===9)split=[2,3,4,5,6,8,9].includes(d);
   else if(p===7)split=d>=2&&d<=7;
   else if(p===6)split=d>=2&&d<=6;
-  else if(p===4)split=document.getElementById('das').value==='yes'&&(d===5||d===6);
+  else if(p===4)split=das&&[5,6].includes(d);
   else if(p===2||p===3)split=d>=2&&d<=7;
-  if(split)return {a:'BÖL',why:'Bu çiftte temel strateji iki ayrı el oynamayı önerir.'};
+  if(split)return {a:'BÖL',why:'Bu çift için temel strateji iki ayrı el oynamayı önerir.'};
  }
  if(s.soft){
-  let a=hand.includes('A')?11:0,others=hand.reduce((sum,r)=>sum+(r==='A'?0:value(r)),0);
-  if(two&&a===11){
-   if(others===2||others===3){if(d>=5&&d<=6)return {a:'ÇİFTLE',why:'Soft 13–14: krupiyenin 5–6 kartına karşı double.'}}
-   if(others===4||others===5){if(d>=4&&d<=6)return {a:'ÇİFTLE',why:'Soft 15–16: krupiyenin 4–6 kartına karşı double.'}}
-   if(others===6&&d>=3&&d<=6)return {a:'ÇİFTLE',why:'Soft 17: krupiyenin 3–6 kartına karşı double.'}
-   if(others===7){if(d>=3&&d<=6)return {a:'ÇİFTLE',why:'Soft 18: 3–6’ya karşı double.'};if([2,7,8].includes(d))return {a:'BEKLE',why:'Soft 18: bu açık karta karşı bekle.'};return {a:'KART ÇEK',why:'Soft 18: 9, 10 veya As’a karşı kart çek.'}}
+  const other=hand.filter(r=>r!=='A').reduce((n,r)=>n+val(r),0);
+  if(two){
+   let dbl=false;
+   if(other===2||other===3)dbl=h17?d>=4&&d<=6:d>=5&&d<=6;
+   else if(other===4||other===5)dbl=h17?d>=3&&d<=6:d>=4&&d<=6;
+   else if(other===6)dbl=h17?d>=2&&d<=6:d>=3&&d<=6;
+   else if(other===7)dbl=h17?d>=2&&d<=6:d>=3&&d<=6;
+   if(dbl)return {a:'ÇİFTLE',why:'Soft el ve krupiyenin açık kartı için double temel stratejiye uygundur.'};
   }
   if(s.total>=19)return {a:'BEKLE',why:'Soft 19 veya üzeri: bekle.'};
+  if(s.total===18){
+   if(d>=3&&d<=6)return {a:'BEKLE',why:'Soft 18: bu açık karta karşı beklemek uygundur (double seçeneği yoksa).'};
+   if(d===2||d===7||d===8)return {a:'BEKLE',why:'Soft 18: krupiyenin 2, 7 veya 8 kartına karşı bekle.'};
+  }
   return {a:'KART ÇEK',why:'Bu soft elde temel strateji kart çekmeyi önerir.'};
  }
  const t=s.total;
  if(two&&t===9&&d>=3&&d<=6)return {a:'ÇİFTLE',why:'9 toplam: krupiyenin 3–6 kartına karşı double.'};
  if(two&&t===10&&d>=2&&d<=9)return {a:'ÇİFTLE',why:'10 toplam: krupiyenin 2–9 kartına karşı double.'};
- if(two&&t===11&&d!==11)return {a:'ÇİFTLE',why:'11 toplam: krupiyenin As dışındaki açık kartlarına karşı double.'};
+ if(two&&t===11&&(d!==11||h17))return {a:'ÇİFTLE',why:'11 toplam: krupiyenin açık kartına karşı double.'};
  if(t<=8)return {a:'KART ÇEK',why:'8 veya altı: kart çek.'};
  if(t===9)return {a:'KART ÇEK',why:'9 toplam: bu açık karta karşı double uygun değil.'};
  if(t===10||t===11)return {a:'KART ÇEK',why:'Double için uygun koşul yok; kart çek.'};
@@ -129,13 +155,36 @@ function decide(){
  if(t>=13&&t<=16)return d>=2&&d<=6?{a:'BEKLE',why:'13–16 toplam: krupiyenin 2–6 kartına karşı bekle.'}:{a:'KART ÇEK',why:'13–16 toplam: krupiyenin güçlü açık kartına karşı kart çek.'};
  return {a:'BEKLE',why:'17 veya üzeri: bekle.'};
 }
-function calculate(){let x=decide();document.querySelector('#result strong').textContent=x.a;document.querySelector('#result small').textContent=hand.length?'Temel strateji önerisi':'Kart bekleniyor';document.getElementById('reason').textContent=x.why;}
-document.getElementById('calculate').onclick=calculate;
-document.getElementById('undo').onclick=()=>{hand.pop();render();calculate()};
-document.getElementById('clear').onclick=()=>{hand=[];dealer.value='';document.getElementById('dealerLabel').textContent='—';render();calculate()};
-dealer.onchange=()=>{document.getElementById('dealerLabel').textContent=dealer.value||'—';calculate()};
-render();
+function calculate(){const x=decide();setResult(x.a,x.why)}
+$('dealer').onchange=()=>{$('dealerLabel').textContent=$('dealer').value||'—';calculate()};
+$('soft17').onchange=calculate;$('das').onchange=calculate;
+$('calculate').onclick=calculate;
+$('undo').onclick=()=>{hand.pop();renderHand();calculate()};
+$('clear').onclick=()=>{hand=[];$('dealer').value='';$('dealerLabel').textContent='—';renderHand();calculate();$('roundMsg').textContent='El temizlendi.'};
+$('countRound').onclick=()=>{
+ if(!hand.length&&!$('dealer').value){$('roundMsg').textContent='Önce kartları gir.';return}
+ shoeSeen.push(...hand);if($('dealer').value)shoeSeen.push($('dealer').value);
+ saveShoe();renderShoe();hand=[];$('dealer').value='';$('dealerLabel').textContent='—';renderHand();calculate();
+ $('roundMsg').textContent='Bu elin kartları deste takibine eklendi.';
+};
+function saveShoe(){try{localStorage.setItem('oneBlackjackShoe',JSON.stringify({shoeSeen,decks}))}catch(e){}}
+function loadShoe(){try{const x=JSON.parse(localStorage.getItem('oneBlackjackShoe')||'{}');if(Array.isArray(x.shoeSeen))shoeSeen=x.shoeSeen;if(Number.isInteger(x.decks)&&x.decks>=1&&x.decks<=8)decks=x.decks}catch(e){}}
+function renderShoe(){
+ const total=decks*52,seen=shoeSeen.length,remaining=Math.max(0,total-seen),left=remaining/52;
+ let rc=shoeSeen.reduce((n,r)=>n+(['2','3','4','5','6'].includes(r)?1:['10','J','Q','K','A'].includes(r)?-1:0),0);
+ $('remainingCards').textContent=remaining;$('decksLeft').textContent=left.toFixed(2);$('runningCount').textContent=rc>0?'+'+rc:rc;
+ $('trueCount').textContent=left>0?(rc/left).toFixed(1):'—';$('seenTotal').textContent=seen;
+ const dist=ranks.map(r=>[r,shoeSeen.filter(x=>x===r).length]);$('distribution').innerHTML='';
+ dist.forEach(([r,n])=>{const row=document.createElement('div');row.style.cssText='display:grid;grid-template-columns:30px 1fr 32px;gap:8px;align-items:center;margin:7px 0;font-size:12px;color:var(--muted)';
+ const label=document.createElement('b');label.textContent=r;label.style.color='white';const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('i');fill.style.width=(seen?Math.min(100,n/Math.max(1,decks*4)*100):0)+'%';bar.appendChild(fill);const num=document.createElement('span');num.textContent=n;row.append(label,bar,num);$('distribution').appendChild(row)});
+}
+$('deckCount').value=String(decks);
+$('deckCount').onchange=()=>{decks=Number($('deckCount').value);shoeSeen=[];saveShoe();renderShoe()};
+$('newShoe').onclick=()=>{if(confirm('Deste sayımı ve görülen kart geçmişi sıfırlansın mı?')){shoeSeen=[];saveShoe();renderShoe()}};
+$('undoSeen').onclick=()=>{shoeSeen.pop();saveShoe();renderShoe()};
+$('tabPlay').onclick=()=>{$('playPanel').classList.remove('hidden');$('shoePanel').classList.add('hidden');$('tabPlay').classList.add('active');$('tabShoe').classList.remove('active')};
+$('tabShoe').onclick=()=>{$('playPanel').classList.add('hidden');$('shoePanel').classList.remove('hidden');$('tabShoe').classList.add('active');$('tabPlay').classList.remove('active');renderShoe()};
+loadShoe();$('deckCount').value=String(decks);renderHand();renderShoe();calculate();
 </script>
-<script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {})); }</script>
-</body>
-</html>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}</script>
+</body></html>
