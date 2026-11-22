@@ -60,6 +60,14 @@ select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px sol
    <div class="section-title">Önerilen hamle</div>
    <div class="action" id="result"><div><strong>BAŞLAMAK İÇİN</strong><small>El ve krupiye kartını seç</small></div></div>
    <div class="reason" id="reason">Çok desteli oyunlar için temel strateji yaklaşımı kullanılır.</div>
+   <div class="card" style="margin:12px 0 0;padding:12px;background:#101a2a">
+    <div class="section-title" style="margin-bottom:7px">Deste farkındalığı <span class="small" id="countSignal">Veri bekleniyor</span></div>
+    <div class="row">
+     <div><div class="small">Kart çekince batma riski</div><div id="bustRisk" style="font-size:21px;font-weight:800;color:var(--gold);margin-top:4px">—</div></div>
+     <div><div class="small">Kalan destede 10 değerli kart</div><div id="tenShare" style="font-size:21px;font-weight:800;color:var(--gold);margin-top:4px">—</div></div>
+    </div>
+    <p class="small" id="countAdvice" style="margin:9px 0 0">Kart dağılımı girildikçe bu alan güncellenir. Bu göstergeler temel stratejinin yerine geçmez.</p>
+   </div>
    <div class="btnrow"><button class="primary" id="calculate">Kararı hesapla</button><button id="countRound">Kartları desteye ekle</button></div>
    <p class="small" id="roundMsg" style="margin-bottom:0"></p>
   </section>
@@ -155,7 +163,28 @@ function decide(){
  if(t>=13&&t<=16)return d>=2&&d<=6?{a:'BEKLE',why:'13–16 toplam: krupiyenin 2–6 kartına karşı bekle.'}:{a:'KART ÇEK',why:'13–16 toplam: krupiyenin güçlü açık kartına karşı kart çek.'};
  return {a:'BEKLE',why:'17 veya üzeri: bekle.'};
 }
-function calculate(){const x=decide();setResult(x.a,x.why)}
+function compositionForCurrentHand(){
+ const counts=Object.fromEntries(ranks.map(r=>[r,4*decks]));
+ shoeSeen.forEach(r=>{if(counts[r]>0)counts[r]--});
+ hand.forEach(r=>{if(counts[r]>0)counts[r]--});
+ const up=$('dealer').value;if(up&&counts[up]>0)counts[up]--;
+ return counts;
+}
+function updateCountAwareness(){
+ const counts=compositionForCurrentHand(), remaining=Object.values(counts).reduce((a,b)=>a+b,0), s=score(hand);
+ if(!hand.length||!$('dealer').value||remaining<=0){
+  $('bustRisk').textContent='—';$('tenShare').textContent='—';$('countSignal').textContent='Veri bekleniyor';
+  $('countAdvice').textContent='Elini ve krupiyenin açık kartını gir; geçmişte kaydettiğin kartlar da hesaba katılır.';return;
+ }
+ let bust=0;ranks.forEach(r=>{if(counts[r]>0&&s.total+val(r)>21)bust+=counts[r]});
+ const tens=['10','J','Q','K'].reduce((n,r)=>n+counts[r],0);
+ $('bustRisk').textContent=(100*bust/remaining).toFixed(1)+'%';
+ $('tenShare').textContent=(100*tens/remaining).toFixed(1)+'%';
+ const rc=shoeSeen.reduce((n,r)=>n+(['2','3','4','5','6'].includes(r)?1:['10','J','Q','K','A'].includes(r)?-1:0),0);
+ $('countSignal').textContent=rc>0?'Düşük kartlar daha çok görüldü':rc<0?'Yüksek kartlar daha çok görüldü':'Dengeli görünüm';
+ $('countAdvice').textContent='Yaklaşık oranlar, kalan kart havuzuna göre hesaplanır. Krupiyenin kapalı kartı bilinmediğinden tahmindir; hamle önerisi doğrulanmış temel stratejiye dayanır.';
+}
+function calculate(){const x=decide();setResult(x.a,x.why);updateCountAwareness()}
 $('dealer').onchange=()=>{$('dealerLabel').textContent=$('dealer').value||'—';calculate()};
 $('soft17').onchange=calculate;$('das').onchange=calculate;
 $('calculate').onclick=calculate;
