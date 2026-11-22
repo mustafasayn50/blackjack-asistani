@@ -61,6 +61,14 @@ select,input{width:100%;background:var(--panel2);color:var(--txt);border:1px sol
    <div class="action" id="result"><div><strong>BAŞLAMAK İÇİN</strong><small>El ve krupiye kartını seç</small></div></div>
    <div class="reason" id="reason">Çok desteli oyunlar için temel strateji yaklaşımı kullanılır.</div>
    <div class="card" style="margin:12px 0 0;padding:12px;background:#101a2a">
+    <div class="section-title" style="margin-bottom:7px">Hi-Lo destekli değerlendirme <span class="small" id="liveCountSignal">Sayım bekleniyor</span></div>
+    <div class="row">
+     <div><div class="small">Anlık gerçek sayım</div><div id="liveTrueCount" style="font-size:21px;font-weight:800;color:var(--gold);margin-top:4px">—</div></div>
+     <div><div class="small">Sayım destekli hamle</div><div id="countMove" style="font-size:18px;font-weight:800;color:var(--green);margin-top:6px">—</div></div>
+    </div>
+    <p class="small" id="countMoveReason" style="margin:9px 0 0">Uygun bir strateji sapması yoksa temel strateji önerisi korunur.</p>
+   </div>
+   <div class="card" style="margin:12px 0 0;padding:12px;background:#101a2a">
     <div class="section-title" style="margin-bottom:7px">Deste farkındalığı <span class="small" id="countSignal">Veri bekleniyor</span></div>
     <div class="row">
      <div><div class="small">Kart çekince batma riski</div><div id="bustRisk" style="font-size:21px;font-weight:800;color:var(--gold);margin-top:4px">—</div></div>
@@ -112,7 +120,7 @@ function dealerVal(r){return r==='A'?11:['10','J','Q','K'].includes(r)?10:Number
 function score(cards){let raw=cards.reduce((s,r)=>s+val(r),0), aces=cards.filter(r=>r==='A').length,total=raw;while(total>21&&aces){total-=10;aces--}return {total,soft:cards.includes('A')&&total!==raw,raw}}
 function makeButtons(target,fn){ranks.forEach(r=>{let b=document.createElement('button');b.className='rank';b.textContent=r;b.onclick=()=>fn(r);target.appendChild(b)})}
 makeButtons($('handButtons'),r=>{hand.push(r);renderHand();calculate()});
-makeButtons($('seenButtons'),r=>{shoeSeen.push(r);saveShoe();renderShoe()});
+makeButtons($('seenButtons'),r=>{shoeSeen.push(r);saveShoe();renderShoe();calculate()});
 ranks.forEach(r=>{let o=document.createElement('option');o.value=r;o.textContent=r;$('dealer').appendChild(o)});
 function renderHand(){
  $('handCards').innerHTML=''; if(!hand.length)$('handCards').innerHTML='<span class="small">Henüz kart eklenmedi</span>';
@@ -170,19 +178,59 @@ function compositionForCurrentHand(){
  const up=$('dealer').value;if(up&&counts[up]>0)counts[up]--;
  return counts;
 }
+function hiLoValue(r){
+ return ['2','3','4','5','6'].includes(r)?1:['10','J','Q','K','A'].includes(r)?-1:0;
+}
+function liveCountInfo(){
+ // Önceki eller + mevcut eldeki açık kartlar: her kart yalnızca bir kez sayılır.
+ const visible=[...shoeSeen,...hand];
+ const up=$('dealer').value;
+ if(up)visible.push(up);
+ const rc=visible.reduce((n,r)=>n+hiLoValue(r),0);
+ const decksLeft=Math.max(0,decks*52-visible.length)/52;
+ return {rc,decksLeft,tc:decksLeft>0?rc/decksLeft:0};
+}
+function countDeviation(){
+ if(hand.length<2||!$('dealer').value)return null;
+ const s=score(hand),d=dealerVal($('dealer').value),tc=liveCountInfo().tc;
+ if(s.soft||hand.length!==2)return null;
+ // Çok desteli oyunlar için yaygın Hi-Lo indeks sapmalarından sınırlı bir grup.
+ const rules=[
+  [16,10,0,'16’ya karşı 10','Gerçek sayım 0 veya üzerindeyse 16’ya karşı 10’da bekle.'],
+  [15,10,4,'15’e karşı 10','Gerçek sayım +4 veya üzerindeyse 15’e karşı 10’da bekle.'],
+  [12,2,3,'12’ye karşı 2','Gerçek sayım +3 veya üzerindeyse 12’ye karşı 2’de bekle.'],
+  [12,3,2,'12’ye karşı 3','Gerçek sayım +2 veya üzerindeyse 12’ye karşı 3’te bekle.'],
+ ];
+ const hit=rules.find(x=>s.total===x[0]&&d===x[1]&&tc>=x[2]);
+ return hit?{label:hit[3],why:hit[4]}:null;
+}
+function updateCountAwareDecision(){
+ const info=liveCountInfo(),dev=countDeviation();
+ $('liveTrueCount').textContent=info.decksLeft>0?(info.tc>0?'+':'')+info.tc.toFixed(1):'—';
+ $('liveCountSignal').textContent=info.rc>0?'Pozitif sayım':info.rc<0?'Negatif sayım':'Nötr sayım';
+ if(dev){
+  $('countMove').textContent='BEKLE';
+  $('countMoveReason').textContent=dev.why+' (TC '+(info.tc>0?'+':'')+info.tc.toFixed(1)+').';
+ }else{
+  $('countMove').textContent=decide().a;
+  $('countMoveReason').textContent='Bu elde tanımlı bir Hi-Lo sapması tetiklenmedi; temel strateji önerisi korunuyor. Gerçek sayım: '+(info.tc>0?'+':'')+info.tc.toFixed(1)+'.';
+ }
+}
 function updateCountAwareness(){
- const counts=compositionForCurrentHand(), remaining=Object.values(counts).reduce((a,b)=>a+b,0), s=score(hand);
+ const counts=compositionForCurrentHand(),remaining=Object.values(counts).reduce((a,b)=>a+b,0),s=score(hand);
  if(!hand.length||!$('dealer').value||remaining<=0){
   $('bustRisk').textContent='—';$('tenShare').textContent='—';$('countSignal').textContent='Veri bekleniyor';
-  $('countAdvice').textContent='Elini ve krupiyenin açık kartını gir; geçmişte kaydettiğin kartlar da hesaba katılır.';return;
+  $('countAdvice').textContent='Elini ve krupiyenin açık kartını gir; geçmişte kaydettiğin kartlar da hesaba katılır.';
+  updateCountAwareDecision();return;
  }
  let bust=0;ranks.forEach(r=>{if(counts[r]>0&&s.total+val(r)>21)bust+=counts[r]});
  const tens=['10','J','Q','K'].reduce((n,r)=>n+counts[r],0);
  $('bustRisk').textContent=(100*bust/remaining).toFixed(1)+'%';
  $('tenShare').textContent=(100*tens/remaining).toFixed(1)+'%';
- const rc=shoeSeen.reduce((n,r)=>n+(['2','3','4','5','6'].includes(r)?1:['10','J','Q','K','A'].includes(r)?-1:0),0);
+ const rc=liveCountInfo().rc;
  $('countSignal').textContent=rc>0?'Düşük kartlar daha çok görüldü':rc<0?'Yüksek kartlar daha çok görüldü':'Dengeli görünüm';
- $('countAdvice').textContent='Yaklaşık oranlar, kalan kart havuzuna göre hesaplanır. Krupiyenin kapalı kartı bilinmediğinden tahmindir; hamle önerisi doğrulanmış temel stratejiye dayanır.';
+ $('countAdvice').textContent='Oranlar görülen kartlar çıkarılarak kalan kart havuzundan tahmin edilir. Krupiyenin kapalı kartı bilinmez. Hi-Lo sapmaları ayrı gösterilir; diğer ellerde temel strateji korunur.';
+ updateCountAwareDecision();
 }
 function calculate(){const x=decide();setResult(x.a,x.why);updateCountAwareness()}
 $('dealer').onchange=()=>{$('dealerLabel').textContent=$('dealer').value||'—';calculate()};
@@ -211,9 +259,9 @@ $('deckCount').value=String(decks);
 $('deckCount').onchange=()=>{decks=Number($('deckCount').value);shoeSeen=[];saveShoe();renderShoe()};
 $('newShoe').onclick=()=>{if(confirm('Deste sayımı ve görülen kart geçmişi sıfırlansın mı?')){shoeSeen=[];saveShoe();renderShoe()}};
 $('undoSeen').onclick=()=>{shoeSeen.pop();saveShoe();renderShoe()};
-$('tabPlay').onclick=()=>{$('playPanel').classList.remove('hidden');$('shoePanel').classList.add('hidden');$('tabPlay').classList.add('active');$('tabShoe').classList.remove('active')};
+$('tabPlay').onclick=()=>{$('playPanel').classList.remove('hidden');$('shoePanel').classList.add('hidden');$('tabPlay').classList.add('active');$('tabShoe').classList.remove('active');calculate()};
 $('tabShoe').onclick=()=>{$('playPanel').classList.add('hidden');$('shoePanel').classList.remove('hidden');$('tabShoe').classList.add('active');$('tabPlay').classList.remove('active');renderShoe()};
 loadShoe();$('deckCount').value=String(decks);renderHand();renderShoe();calculate();
 </script>
-<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}</script>
+<script>if("serviceWorker"in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=4").catch(()=>{}));}</script>
 </body></html>
