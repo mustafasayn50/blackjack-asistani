@@ -1,4 +1,4 @@
-const CACHE_NAME = 'one-blackjack-v4';
+const CACHE_NAME = 'one-blackjack-v5';
 self.addEventListener('install', event => {
  self.skipWaiting();
  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.add('./')));
