@@ -34,7 +34,6 @@ workflows:
                   PRODUCT_NAME: ONE Blackjack
                   INFOPLIST_KEY_CFBundleDisplayName: ONE Blackjack
                   TARGETED_DEVICE_FAMILY: "1"
-                  CODE_SIGNING_ALLOWED: "NO"
               dependencies:
                 - target: BroadcastExtension
                   embed: true
@@ -53,7 +52,6 @@ workflows:
                   INFOPLIST_KEY_NSExtension_NSExtensionAttributes_RPBroadcastProcessMode: RPBroadcastProcessModeSampleBuffer
                   SKIP_INSTALL: YES
                   APPLICATION_EXTENSION_API_ONLY: YES
-                  CODE_SIGNING_ALLOWED: "NO"
           PROJECT
 
           cat > OneBlackjack/ONEBlackjackApp.swift <<'SWIFT'
@@ -159,7 +157,7 @@ workflows:
           brew install xcodegen
           xcodegen generate
 
-      - name: Build unsigned iOS app
+      - name: Build iOS app with ad-hoc signing
         script: |
           xcodebuild \
             -project ONEBlackjack.xcodeproj \
@@ -167,7 +165,9 @@ workflows:
             -configuration Debug \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
-            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGN_IDENTITY=- \
             build
 
     artifacts:
