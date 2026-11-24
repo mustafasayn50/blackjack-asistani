@@ -30,6 +30,7 @@ workflows:
                 - path: OneBlackjack
               settings:
                 base:
+                  GENERATE_INFOPLIST_FILE: YES
                   PRODUCT_BUNDLE_IDENTIFIER: com.mustafasayin.oneblackjack
                   PRODUCT_NAME: ONE Blackjack
                   INFOPLIST_KEY_CFBundleDisplayName: ONE Blackjack
@@ -46,6 +47,7 @@ workflows:
                 - path: BroadcastExtension
               settings:
                 base:
+                  GENERATE_INFOPLIST_FILE: YES
                   PRODUCT_BUNDLE_IDENTIFIER: com.mustafasayin.oneblackjack.BroadcastUpload
                   INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier: com.apple.broadcast-services-upload
                   INFOPLIST_KEY_NSExtension_NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).SampleHandler"
@@ -157,18 +159,16 @@ workflows:
           brew install xcodegen
           xcodegen generate
 
-      - name: Build iOS app with ad-hoc signing
+      - name: Build iOS Simulator app without signing
         script: |
           xcodebuild \
             -project ONEBlackjack.xcodeproj \
             -scheme ONEBlackjack \
             -configuration Debug \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            CODE_SIGNING_ALLOWED=YES \
-            CODE_SIGNING_REQUIRED=YES \
-            CODE_SIGN_IDENTITY=- \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
             build
 
     artifacts:
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphoneos/*.app
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/*.app
